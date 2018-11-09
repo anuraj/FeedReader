@@ -50,29 +50,29 @@ namespace FeedReader
                     var azureAppServicePrincipalIdHeader = context.Request.Headers["X-MS-CLIENT-PRINCIPAL-ID"][0];
                     var azureAppServicePrincipalNameHeader = context.Request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"][0];
                     var cookieContainer = new CookieContainer();
-                    HttpClientHandler handler = new HttpClientHandler()
+                    var handler = new HttpClientHandler()
                     {
                         CookieContainer = cookieContainer
                     };
-                    string uriString = $"{context.Request.Scheme}://{context.Request.Host}";
-                    foreach (var c in context.Request.Cookies)
+                    var uriString = $"{context.Request.Scheme}://{context.Request.Host}";
+                    foreach (var cookie in context.Request.Cookies)
                     {
-                        cookieContainer.Add(new Uri(uriString), new Cookie(c.Key, c.Value));
+                        cookieContainer.Add(new Uri(uriString), new Cookie(cookie.Key, cookie.Value));
                     }
-                    string jsonResult = string.Empty;
-                    using (HttpClient client = new HttpClient(handler))
+                    var jsonResult = string.Empty;
+                    using (var client = new HttpClient(handler))
                     {
                         var res = await client.GetAsync($"{uriString}/.auth/me");
                         jsonResult = await res.Content.ReadAsStringAsync();
                     }
                     var obj = JArray.Parse(jsonResult);
-                    string user_id = obj[0]["user_id"].Value<string>();
-                    List<Claim> claims = new List<Claim>();
+                    var user_id = obj[0]["user_id"].Value<string>();
+                    var claims = new List<Claim>();
                     foreach (var claim in obj[0]["user_claims"])
                     {
                         claims.Add(new Claim(claim["typ"].ToString(), claim["val"].ToString()));
                     }
-                    var identity = new GenericIdentity(azureAppServicePrincipalIdHeader);
+                    var identity = new GenericIdentity(azureAppServicePrincipalNameHeader);
                     identity.AddClaims(claims);
                     context.User = new GenericPrincipal(identity, null);
                 };
