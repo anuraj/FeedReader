@@ -37,9 +37,18 @@
                 </div>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1 justify-content-end">
+                        @if(User.Identity.IsAuthenticated)
+                        {
+                        <li class="nav-item">
+                            <a href="/.auth/logout?post_logout_redirect_uri=/Home/Index">Sign out</a>
+                        </li>
+                        }
+                        else
+                        {
                         <li class="nav-item">
                             <a href="/.auth/login/twitter?post_login_redirect_url=/Home/Index">Log in with Twitter</a>
                         </li>
+                        }
                     </ul>
                 </div>
             </div>

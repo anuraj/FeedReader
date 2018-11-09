@@ -12,12 +12,6 @@ namespace FeedReader.Controllers
     {
         public IActionResult Index()
         {
-            string headers = String.Empty;
-            foreach (var key in HttpContext.Request.Headers.Keys)
-            {
-                headers += key + "=" + Request.Headers[key] + Environment.NewLine;
-            }
-            ViewData["HeadersInfo"] = headers;
             return View();
         }
 
