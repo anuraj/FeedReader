@@ -30,7 +30,7 @@ namespace FeedReader
         {
             services.AddDbContext<FeedReaderContext>(options =>
                 options.UseMySQL(Configuration.GetConnectionString("MYSQLCONNSTR_localdb")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUserService, UserService>();
         }
