@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace FeedReader.Models
@@ -9,5 +10,8 @@ namespace FeedReader.Models
         public string Title { get; set; }
         public string Url { get; set; }
         public string Icon { get; set; }
+        public bool IsDeleted { get; set; } = false;
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+        public string UserId { get; set; }
     }
 }
