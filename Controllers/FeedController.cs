@@ -8,29 +8,29 @@ using FeedReader.Models;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
 using FeedReader.Services;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace FeedReader.Controllers
 {
     public class FeedController : Controller
     {
-        private readonly FeedReaderContext _feedReaderContext;
+        private readonly IStorageService _storageService;
         private readonly IUserService _userService;
         private readonly IFeedService _feedService;
-        public FeedController(FeedReaderContext feedReaderContext, IUserService userService, IFeedService feedService)
+        public FeedController(IStorageService storageServicet, IUserService userService, IFeedService feedService)
         {
-            _feedReaderContext = feedReaderContext;
+            _storageService = storageServicet;
             _userService = userService;
             _feedService = feedService;
         }
 
-        public async Task<IActionResult> AddFeed(Feed feed)
+        public async Task<IActionResult> AddFeed(FeedUrl feedUrl)
         {
             if (ModelState.IsValid)
             {
-                var response = await _feedService.GetFeedAsyc(feed.Url);
+                var response = await _feedService.GetFeedAsyc(feedUrl.Url, _userService.Id);
                 response.UserId = _userService.Id;
-                _feedReaderContext.Feeds.Add(response);
-                var affectedRows = await _feedReaderContext.SaveChangesAsync();
+                await _storageService.CreateFeed(response);
                 return Ok();
             }
 

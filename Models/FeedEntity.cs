@@ -1,13 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace FeedReader.Models
 {
-    public class Feed
+    public class FeedEntity : TableEntity
     {
+        public FeedEntity()
+        {
+        }
+        public FeedEntity(string userId)
+        {
+            Id = Guid.NewGuid();
+            RowKey = Id.ToString();
+            PartitionKey = userId;
+        }
+
         [Key]
-        public long Id { get; set; }
+        public Guid Id { get; set; }
         [MaxLength(255)]
         public string Title { get; set; }
         public string Description { get; set; }
@@ -17,6 +28,5 @@ namespace FeedReader.Models
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         public string UserId { get; set; }
-        public ICollection<Item> Items { get; set; }
     }
 }

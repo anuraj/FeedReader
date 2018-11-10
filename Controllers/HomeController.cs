@@ -13,19 +13,19 @@ namespace FeedReader.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly FeedReaderContext _feedReaderContext;
+        private readonly IStorageService _storageService;
         private readonly IUserService _userService;
-        public HomeController(FeedReaderContext feedReaderContext, IUserService userService)
+        public HomeController(IStorageService storageService, IUserService userService)
         {
-            _feedReaderContext = feedReaderContext;
+            _storageService = storageService;
             _userService = userService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             if (_userService.IsAuthenticated)
             {
-                var feeds = _feedReaderContext.Feeds.Where(f => f.UserId == _userService.Id)?.AsEnumerable();
+                var feeds = await _storageService.GetMyFeedsAsync();
                 return View(feeds);
             }
 

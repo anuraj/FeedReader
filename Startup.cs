@@ -28,13 +28,12 @@ namespace FeedReader
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient();
-            services.AddDbContext<FeedReaderContext>(options =>
-                options.UseMySQL(Configuration.GetConnectionString("MYSQLCONNSTR_localdb")));
+            services.AddHttpClient();            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IFeedService, FeedService>();
+            services.AddTransient<IStorageService, StorageService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

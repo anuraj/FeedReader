@@ -12,7 +12,7 @@ namespace FeedReader.Services
 {
     public interface IFeedService
     {
-        Task<Feed> GetFeedAsyc(string url);
+        Task<FeedEntity> GetFeedAsyc(string url, string userId);
     }
 
     public class FeedService : IFeedService
@@ -22,10 +22,10 @@ namespace FeedReader.Services
         {
             _httpClientFactory = httpClientFactory;
         }
-        public async Task<Feed> GetFeedAsyc(string url)
+        public async Task<FeedEntity> GetFeedAsyc(string url, string userId)
         {
-            var feed = new Feed();
-            feed.Items = new List<Item>();
+            var feed = new FeedEntity(userId);
+            // feed.Items = new List<FeedItemEntity>();
             using (var httpClient = _httpClientFactory.CreateClient())
             {
                 var stream = await httpClient.GetStreamAsync(url);
@@ -38,18 +38,11 @@ namespace FeedReader.Services
                         {
                             case SyndicationElementType.Category:
                             case SyndicationElementType.Person:
+                            case SyndicationElementType.Item:
                                 break;
                             case SyndicationElementType.Image:
                                 var image = await feedReader.ReadImage();
                                 feed.Image = image.Url.ToString();
-                                break;
-                            case SyndicationElementType.Item:
-                                var item = await feedReader.ReadItem();
-                                var feedItem = new Item();
-                                feedItem.Title = item.Title;
-                                feedItem.Content = item.Description;
-                                feedItem.Url = item.Links.FirstOrDefault()?.Uri.ToString();
-                                feed.Items.Add(feedItem);
                                 break;
                             case SyndicationElementType.Link:
                                 var link = await feedReader.ReadLink();

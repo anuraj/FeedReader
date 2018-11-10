@@ -4,7 +4,7 @@
 
 @if(UserService.IsAuthenticated)
 {
-    <partial name="_AddFeed" model='new Feed{ Url = "" }' />
+    <partial name="_AddFeed" model='new FeedUrl{ Url = ""}'/>
 }
 else
 {
