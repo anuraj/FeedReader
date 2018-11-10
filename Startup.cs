@@ -30,6 +30,7 @@ namespace FeedReader
         {
             services.AddHttpClient();            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddApplicationInsightsTelemetry();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IFeedService, FeedService>();
