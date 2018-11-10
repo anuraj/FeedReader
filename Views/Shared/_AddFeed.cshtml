@@ -1,0 +1,19 @@
+@model FeedReader.Models.Feed
+
+<div class="card">
+  <h5 class="card-header">Add Feed</h5>
+  <div class="card-body">
+    <form method="POST" asp-action="AddFeed" asp-controller="Feed" 
+        data-ajax-begin="onBegin" data-ajax-complete="onComplete"
+        data-ajax-failure="onFailed" data-ajax-success="onSuccess"
+        data-ajax="true" data-ajax-method="POST">
+        <div class="input-group mb-3">
+            <input type="url" asp-for="Url" class="form-control" placeholder="Provide URL or Feed URL" aria-label="Provide URL or Feed URL" aria-describedby="AddButton">
+            <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit" id="AddButton">Add Feed</button>
+            </div>
+        </div>
+        <span asp-validation-for="Url"></span>
+    </form>
+  </div>
+</div> 

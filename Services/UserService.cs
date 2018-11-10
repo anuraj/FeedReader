@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
 namespace FeedReader.Services
@@ -7,14 +8,21 @@ namespace FeedReader.Services
     public class UserService : IUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public UserService(IHttpContextAccessor httpContextAccessor)
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public UserService(IHttpContextAccessor httpContextAccessor, IHostingEnvironment hostingEnvironment)
         {
             _httpContextAccessor = httpContextAccessor;
+            _hostingEnvironment = hostingEnvironment;
         }
         public string Name
         {
             get
             {
+                if (_hostingEnvironment.IsDevelopment())
+                {
+                    return "Feed Reader";
+                }
+
                 return _httpContextAccessor.HttpContext.User.Claims
                     .FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
             }
@@ -24,11 +32,28 @@ namespace FeedReader.Services
         {
             get
             {
+                if (_hostingEnvironment.IsDevelopment())
+                {
+                    return "0000000";
+                }
+
                 return _httpContextAccessor.HttpContext.User.Claims
                     .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             }
         }
 
-        public bool IsAuthenticated => _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
+        public bool IsAuthenticated
+        {
+            get
+            {
+                if (_hostingEnvironment.IsDevelopment())
+                {
+                    return true;
+                }
+
+                return _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
+            }
+        }
+
     }
 }

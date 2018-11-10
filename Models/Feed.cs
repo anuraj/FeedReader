@@ -8,11 +8,12 @@ namespace FeedReader.Models
     {
         [Key]
         public long Id { get; set; }
-        [Required, MaxLength(255)]
+        [MaxLength(255)]
         public string Title { get; set; }
+        public string Description { get; set; }
         [Required, MaxLength(255), Url]
         public string Url { get; set; }
-        public string Icon { get; set; }
+        public string Image { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         public string UserId { get; set; }

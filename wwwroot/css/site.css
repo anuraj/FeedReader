@@ -54,3 +54,8 @@ body {
   height: 60px;
   line-height: 50px; /* Vertically center the text there */
 }
+
+.field-validation-error {
+  color:red;
+  font-size:small;
+}
