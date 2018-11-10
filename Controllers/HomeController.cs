@@ -7,18 +7,28 @@ using Microsoft.AspNetCore.Mvc;
 using FeedReader.Models;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
+using FeedReader.Services;
 
 namespace FeedReader.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly FeedReaderContext _feedReaderContext;
+        private readonly IUserService _userService;
+        public HomeController(FeedReaderContext feedReaderContext, IUserService userService)
         {
-            return View();
+            _feedReaderContext = feedReaderContext;
+            _userService = userService;
         }
 
-        public IActionResult Privacy()
+        public IActionResult Index()
         {
+            if (_userService.IsAuthenticated)
+            {
+                var feeds = _feedReaderContext.Feeds.Where(f => f.UserId == _userService.Id)?.AsEnumerable();
+                return View(feeds);
+            }
+
             return View();
         }
 

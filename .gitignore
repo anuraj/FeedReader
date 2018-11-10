@@ -4,3 +4,4 @@ obj
 *.min.js
 *.min.css
 lib
+Migrations

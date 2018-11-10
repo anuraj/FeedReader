@@ -9,5 +9,6 @@ namespace FeedReader.Models
         {
         }
         public DbSet<Feed> Feeds { get; set; }
+        public DbSet<Item> Items { get; set; }
     }
 }

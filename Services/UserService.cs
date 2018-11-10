@@ -16,8 +16,19 @@ namespace FeedReader.Services
             get
             {
                 return _httpContextAccessor.HttpContext.User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                return _httpContextAccessor.HttpContext.User.Claims
                     .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             }
         }
+
+        public bool IsAuthenticated => _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
     }
 }
