@@ -4,8 +4,8 @@
   <h5 class="card-header">Add Feed</h5>
   <div class="card-body">
     <form method="POST" asp-action="AddFeed" asp-controller="Feed" 
-        data-ajax-begin="onBegin" data-ajax-complete="onComplete"
-        data-ajax-failure="onFailed" data-ajax-success="onSuccess"
+        data-ajax-begin="onBeginAddFeed" data-ajax-complete="onCompleteAddFeed"
+        data-ajax-failure="onFailedAddFeed" data-ajax-success="onSuccessAddFeed"
         data-ajax="true" data-ajax-method="POST">
         <div class="input-group mb-3">
             <input type="url" asp-for="Url" class="form-control" placeholder="Provide URL or Feed URL" aria-label="Provide URL or Feed URL" aria-describedby="AddButton">

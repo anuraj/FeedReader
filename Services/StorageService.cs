@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FeedReader.Models;
 using Microsoft.Extensions.Configuration;
@@ -21,10 +22,10 @@ namespace FeedReader.Services
             _userService = userService;
             _storageAccount = CloudStorageAccount.Parse(_configuration.GetConnectionString("AzureStorageConnectionString"));
             _tableClient = _storageAccount.CreateCloudTableClient();
-           _feedTable = _tableClient.GetTableReference("Feeds");
-           _feedItemsTable = _tableClient.GetTableReference("FeedItems");
-           _feedTable.CreateIfNotExistsAsync();
-           _feedItemsTable.CreateIfNotExistsAsync();
+            _feedTable = _tableClient.GetTableReference("Feeds");
+            _feedItemsTable = _tableClient.GetTableReference("FeedItems");
+            _feedTable.CreateIfNotExistsAsync();
+            _feedItemsTable.CreateIfNotExistsAsync();
         }
         public async Task CreateFeed(FeedEntity feed)
         {
@@ -38,6 +39,16 @@ namespace FeedReader.Services
                 .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, _userService.Id));
             var tableResult = await _feedTable.ExecuteQuerySegmentedAsync(query, null);
             return tableResult.Results;
+        }
+
+        public async Task<bool> IsFeedAlreadyCreatedByMe(string url)
+        {
+            var partitionKeyFilter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, _userService.Id);
+            var urlFilter = TableQuery.GenerateFilterCondition("Url", QueryComparisons.Equal, url);
+            var query = new TableQuery<DynamicTableEntity>();
+            query.FilterString = TableQuery.CombineFilters(partitionKeyFilter, TableOperators.And, urlFilter);
+            var tableResult = await _feedTable.ExecuteQuerySegmentedAsync(query, null);
+            return tableResult.Results.Count >= 1;
         }
     }
 }

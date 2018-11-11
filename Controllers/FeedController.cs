@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
 using FeedReader.Services;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.ApplicationInsights;
 
 namespace FeedReader.Controllers
 {
@@ -17,20 +18,37 @@ namespace FeedReader.Controllers
         private readonly IStorageService _storageService;
         private readonly IUserService _userService;
         private readonly IFeedService _feedService;
-        public FeedController(IStorageService storageServicet, IUserService userService, IFeedService feedService)
+        private readonly TelemetryClient _telemetryClient;
+        public FeedController(IStorageService storageServicet, IUserService userService, 
+            IFeedService feedService, TelemetryClient telemetryClient)
         {
             _storageService = storageServicet;
             _userService = userService;
             _feedService = feedService;
+            _telemetryClient = telemetryClient;
         }
 
+        [HttpPost]
         public async Task<IActionResult> AddFeed(FeedUrl feedUrl)
         {
             if (ModelState.IsValid)
             {
-                var response = await _feedService.GetFeedAsyc(feedUrl.Url, _userService.Id);
-                response.UserId = _userService.Id;
-                await _storageService.CreateFeed(response);
+                if (await _storageService.IsFeedAlreadyCreatedByMe(feedUrl.Url))
+                {
+                    return Conflict();
+                }
+
+                try
+                {
+                    var response = await _feedService.GetFeedAsyc(feedUrl.Url, _userService.Id);
+                    response.UserId = _userService.Id;
+                    await _storageService.CreateFeed(response);
+                }
+                catch(Exception ex)
+                {
+                    _telemetryClient.TrackException(ex);
+                    return StatusCode(500);
+                }
                 return Ok();
             }
 

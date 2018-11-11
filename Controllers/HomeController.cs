@@ -8,6 +8,7 @@ using FeedReader.Models;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
 using FeedReader.Services;
+using Microsoft.ApplicationInsights;
 
 namespace FeedReader.Controllers
 {
@@ -15,21 +16,28 @@ namespace FeedReader.Controllers
     {
         private readonly IStorageService _storageService;
         private readonly IUserService _userService;
-        public HomeController(IStorageService storageService, IUserService userService)
+        private readonly TelemetryClient _telemetryClient;
+        public HomeController(IStorageService storageService, IUserService userService, TelemetryClient telemetryClient)
         {
             _storageService = storageService;
             _userService = userService;
+            _telemetryClient = telemetryClient;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> GetFeedsAsync()
         {
             if (_userService.IsAuthenticated)
             {
                 var feeds = await _storageService.GetMyFeedsAsync();
-                return View(feeds);
+                return Json(feeds);
             }
 
-            return View();
+            return NotFound();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

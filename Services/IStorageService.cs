@@ -8,5 +8,7 @@ namespace FeedReader.Services
     {
         Task CreateFeed(FeedEntity feed);
         Task<IEnumerable<FeedEntity>> GetMyFeedsAsync();
+
+        Task<bool> IsFeedAlreadyCreatedByMe(string url);
     }
 }

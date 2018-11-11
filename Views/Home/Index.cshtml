@@ -5,6 +5,7 @@
 @if(UserService.IsAuthenticated)
 {
     <partial name="_AddFeed" model='new FeedUrl{ Url = ""}'/>
+    <partial name="_DisplayFeeds" />
 }
 else
 {
