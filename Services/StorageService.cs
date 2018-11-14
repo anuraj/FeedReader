@@ -30,7 +30,14 @@ namespace FeedReader.Services
         public async Task CreateFeed(FeedEntity feed)
         {
             var insertFeed = TableOperation.Insert(feed);
+            var batchOperation = new TableBatchOperation();
+            foreach (var item in feed.Items)
+            {
+                batchOperation.Insert(item);
+            }
+
             await _feedTable.ExecuteAsync(insertFeed);
+            await _feedItemsTable.ExecuteBatchAsync(batchOperation);
         }
 
         public async Task<IEnumerable<FeedEntity>> GetMyFeedsAsync()

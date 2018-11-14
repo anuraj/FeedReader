@@ -19,7 +19,7 @@ namespace FeedReader.Controllers
         private readonly IUserService _userService;
         private readonly IFeedService _feedService;
         private readonly TelemetryClient _telemetryClient;
-        public FeedController(IStorageService storageServicet, IUserService userService, 
+        public FeedController(IStorageService storageServicet, IUserService userService,
             IFeedService feedService, TelemetryClient telemetryClient)
         {
             _storageService = storageServicet;
@@ -41,10 +41,11 @@ namespace FeedReader.Controllers
                 try
                 {
                     var response = await _feedService.GetFeedAsyc(feedUrl.Url, _userService.Id);
+                    response.FeedCount = response.Items.Count;
                     response.UserId = _userService.Id;
                     await _storageService.CreateFeed(response);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _telemetryClient.TrackException(ex);
                     return StatusCode(500);
@@ -53,6 +54,18 @@ namespace FeedReader.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetFeedsAsync()
+        {
+            if (_userService.IsAuthenticated)
+            {
+                var feeds = await _storageService.GetMyFeedsAsync();
+                return Json(feeds);
+            }
+
+            return NotFound();
         }
     }
 }

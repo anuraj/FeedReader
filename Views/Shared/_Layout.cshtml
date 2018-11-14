@@ -73,7 +73,9 @@
             Copyright &copy; @DateTime.Now.Year - <a href="https://github.com/anuraj">Anuraj</a>. Licesned under <a href="https://anuraj.mit-license.org/">MIT</a>.
         </div>
     </footer>
-
+    <script>
+        var isAuthenticated = "@UserService.IsAuthenticated";
+    </script>
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>

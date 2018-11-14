@@ -9,6 +9,7 @@ var onCompleteAddFeed = function () {
 var onSuccessAddFeed = function (context) {
     showNotification("Feed saved successfully.")
     $("#Url").val("").focus();
+    fetchFeeds();
 };
 
 var onFailedAddFeed = function (context) {
@@ -20,6 +21,18 @@ var onFailedAddFeed = function (context) {
     $("#Url").val("").focus();
 };
 
+var fetchFeeds = function () {
+    if (isAuthenticated) {
+        var url = "/Feed/GetFeedsAsync";
+        $.getJSON(url, function (response) {
+            console.log(response);
+            if (response.length !== 0) {
+                RenderFeedItems(response);
+            }
+        });
+    }
+}
+
 var showNotification = function (message) {
     var snackbar = document.getElementById("snackbar");
     snackbar.innerHTML = "";
@@ -27,3 +40,20 @@ var showNotification = function (message) {
     snackbar.innerHTML = message;
     setTimeout(function () { snackbar.className = snackbar.className.replace("show", ""); }, 3000);
 }
+
+var RenderFeedItems = function (source) {
+    var template = document.getElementById("FeedItem");
+    var templateHtml = template.innerHTML;
+    var listHtml = "";
+    for (var key in source) {
+        listHtml += templateHtml.replace(/{{title}}/g, source[key]["title"])
+            .replace(/{{feedCount}}/g, source[key]["feedCount"]);
+    }
+
+    document.getElementById("FeedDisplay").innerHTML = listHtml;
+}
+
+
+$(function () {
+    fetchFeeds();
+});

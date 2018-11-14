@@ -29,17 +29,6 @@ namespace FeedReader.Controllers
             return View();
         }
 
-        public async Task<IActionResult> GetFeedsAsync()
-        {
-            if (_userService.IsAuthenticated)
-            {
-                var feeds = await _storageService.GetMyFeedsAsync();
-                return Json(feeds);
-            }
-
-            return NotFound();
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

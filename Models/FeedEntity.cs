@@ -28,5 +28,7 @@ namespace FeedReader.Models
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         public string UserId { get; set; }
+        public int FeedCount { get; set; }
+        public List<FeedItemEntity> Items { get; set; }
     }
 }

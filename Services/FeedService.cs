@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
@@ -18,6 +20,7 @@ namespace FeedReader.Services
         public async Task<FeedEntity> GetFeedAsyc(string url, string userId)
         {
             var feed = new FeedEntity(userId);
+            feed.Items = new List<FeedItemEntity>();
             feed.Url = url;
             using (var httpClient = _httpClientFactory.CreateClient())
             {
@@ -31,8 +34,15 @@ namespace FeedReader.Services
                         {
                             case SyndicationElementType.Category:
                             case SyndicationElementType.Person:
-                            case SyndicationElementType.Item:
                             case SyndicationElementType.Link:
+                                break;
+                            case SyndicationElementType.Item:
+                                var item = await feedReader.ReadItem();
+                                var feedItem = new FeedItemEntity(feed.Id);
+                                feedItem.Title = item.Title;
+                                feedItem.Content = item.Description;
+                                feedItem.Url = item.Links.FirstOrDefault()?.Uri.ToString();
+                                feed.Items.Add(feedItem);
                                 break;
                             case SyndicationElementType.Image:
                                 var image = await feedReader.ReadImage();
