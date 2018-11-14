@@ -35,6 +35,7 @@ namespace FeedReader
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IFeedService, FeedService>();
             services.AddTransient<IStorageService, StorageService>();
+            services.AddTransient<IAppVersionService, AppVersionService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
