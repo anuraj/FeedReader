@@ -1,13 +1,29 @@
 <hr />
-<ul id="FeedDisplay" class="list-group">
-   <li class="list-group-item d-flex justify-content-between align-items-center">
-       No feeds found.
-   </li>
-</ul>
+<div class="row">
+    <div class="col-3">
+        <ul id="FeedDisplay" class="nav flex-column nav-pills" id="myTab" role="tablist">
+            
+        </ul>
+    </div>
+    <div class="col-9">
+        <div class="tab-content" id="FeedContent">
+            
+        </div>
+    </div>
+</div>
 
-<script id="FeedItem" type="text/template">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-        {{title}}
-        <span class="badge badge-primary badge-pill">{{feedCount}}</span>
+<script id="TabHeading" type="text/template">
+    <li class="nav-item">
+        <a class="nav-link {{cssclass}}" id="{{id}}-tab" data-key="{{key}}" data-toggle="tab" href="#Tab{{id}}" role="tab" aria-controls="{{id}}" aria-selected="true">
+            {{title}}
+            <span class="badge badge-primary badge-pill">{{feedCount}}</span>
+        </a>
     </li>
+</script>
+
+<script id="TabContent" type="text/template">
+    <div class="tab-pane fade{{cssclass}}" id="Tab{{id}}" role="tabpanel"  data-key="{{key}}" aria-labelledby="{{id}}-tab">
+        <h1>{{title}}</h1>
+        <hr />
+    </div>
 </script>

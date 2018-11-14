@@ -28,6 +28,7 @@ var fetchFeeds = function () {
             console.log(response);
             if (response.length !== 0) {
                 RenderFeedItems(response);
+                RenderFeedContent(response);
             }
         });
     }
@@ -42,15 +43,51 @@ var showNotification = function (message) {
 }
 
 var RenderFeedItems = function (source) {
-    var template = document.getElementById("FeedItem");
+    var template = document.getElementById("TabHeading");
     var templateHtml = template.innerHTML;
     var listHtml = "";
-    for (var key in source) {
-        listHtml += templateHtml.replace(/{{title}}/g, source[key]["title"])
-            .replace(/{{feedCount}}/g, source[key]["feedCount"]);
+    for (var i = 0; i < source.length; i++) {
+        var key = i;
+        if (i === 0) {
+            listHtml += templateHtml.replace(/{{title}}/g, source[key]["title"])
+                .replace(/{{id}}/g, i)
+                .replace(/{{cssclass}}/g, " show active")
+                .replace(/{{key}}/g, source[key]["id"])
+                .replace(/{{feedCount}}/g, source[key]["feedCount"]);
+        } else {
+            listHtml += templateHtml.replace(/{{title}}/g, source[key]["title"])
+                .replace(/{{id}}/g, i)
+                .replace(/{{cssclass}}/g, "")
+                .replace(/{{key}}/g, source[key]["id"])
+                .replace(/{{feedCount}}/g, source[key]["feedCount"]);
+        }
     }
 
     document.getElementById("FeedDisplay").innerHTML = listHtml;
+}
+
+var RenderFeedContent = function (source) {
+
+    var tabContentTemplate = document.getElementById("TabContent");
+    var tabContentTemplateHtml = tabContentTemplate.innerHTML;
+    var tabContentListHtml = "";
+    var counter = 0;
+    for (var i = 0; i < source.length; i++) {
+        var key = i;
+        if (i === 0) {
+            tabContentListHtml += tabContentTemplateHtml.replace(/{{title}}/g, source[key]["title"])
+                .replace(/{{id}}/g, i)
+                .replace(/{{key}}/g, source[key]["id"])
+                .replace(/{{cssclass}}/g, " show active");
+        } else {
+            tabContentListHtml += tabContentTemplateHtml.replace(/{{title}}/g, source[key]["title"])
+                .replace(/{{id}}/g, i)
+                .replace(/{{key}}/g, source[key]["id"])
+                .replace(/{{cssclass}}/g, "");
+        }
+    }
+
+    document.getElementById("FeedContent").innerHTML = tabContentListHtml;
 }
 
 
