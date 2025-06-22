@@ -1,0 +1,74 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "bootstrap@5.3.3",
+      "provider": "cdnjs",
+      "files": [
+        "css/bootstrap.min.css",
+        "js/bootstrap.bundle.min.js"
+      ],
+      "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "library": "jquery@3.6.0",
+      "provider": "cdnjs",
+      "files": [
+        "jquery.min.js"
+      ],
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "library": "jquery-validate@1.20.0",
+      "provider": "cdnjs",
+      "files": [
+        "jquery.validate.min.js"
+      ],
+      "destination": "wwwroot/lib/jquery-validation"
+    },
+    {
+      "library": "jquery-validation-unobtrusive@4.0.0",
+      "provider": "cdnjs",
+      "files": [
+        "jquery.validate.unobtrusive.min.js"
+      ],
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive"
+    },
+    {
+      "library": "bootstrap-icons@1.11.3",
+      "provider": "cdnjs",
+      "files": [
+        "font/bootstrap-icons.min.css",
+        "font/fonts/bootstrap-icons.woff",
+        "font/fonts/bootstrap-icons.woff2"
+      ],
+      "destination": "wwwroot/lib/bootstrap-icons"
+    },
+    {
+      "library": "notyf@3.10.0",
+      "destination": "wwwroot/lib/notyf",
+      "provider": "cdnjs",
+      "files": [
+        "notyf.min.css",
+        "notyf.min.js"
+      ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "moment@2.30.1",
+      "destination": "wwwroot/lib/moment",
+      "files": [
+        "moment.min.js"
+      ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "chart.js@4.3.0",
+      "destination": "wwwroot/lib/chartjs",
+      "files": [
+        "dist/chart.umd.min.js"
+      ]
+    }   
+  ]
+}

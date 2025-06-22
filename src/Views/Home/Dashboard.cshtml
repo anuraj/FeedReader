@@ -1,0 +1,65 @@
+﻿@model IPagedList<FeedResponse>
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@if (Model == null || !Model.Any())
+{
+    <div class="text-center">
+        <i class="bi bi-rss me-1" style="font-size: 10em;"></i><br />
+        <h1 class="display-6">No Feeds Available</h1>
+        <p>Please add some feeds to view and manage them.</p>
+        <a asp-controller="Home" asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Add Feed
+        </a>
+    </div>
+}
+else
+{
+    <h3>Your Feeds</h3>
+    <div class="list-group">
+        @foreach (var feed in Model)
+        {
+            <a asp-action="Details" asp-route-id="@feed.Id" class="list-group-item list-group-item-action">
+                <div class="d-flex align-items-center">
+                    <img src="@feed.ImageUrl" alt="@feed.Title" class="img-thumbnail border-0 me-2"
+                        style="width: 50px; height: 50px; object-fit: cover;">
+                    <div class="flex-grow-1">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">@feed.Title</h5>
+                            <small class="text-body-secondary">@feed.CreatedDate.ToString("MMMM dd, yyyy")</small>
+                        </div>
+                        <p class="mb-1">@feed.Description</p>
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+    <nav>
+        @Html.PagedListPager(Model, page => Url.Action("index", new { page = page }), new PagedListRenderOptions()
+        {
+            ActiveLiElementClass = "active",
+            PageClasses = new[] { "page-link" },
+            LiElementClasses = new[] { "page-item" },
+            UlElementClasses = new[] { "pagination", "justify-content-center", "mt-3" },
+            LinkToNextPageFormat = "Next",
+            LinkToPreviousPageFormat = "Previous",
+            MaximumPageNumbersToDisplay = 5,
+            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+            DisplayLinkToNextPage = PagedListDisplayMode.Always
+        })
+</nav>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Handle image loading errors, replace with default image
+            $('.list-group-item img').each(function () {
+                if (!this.complete || this.naturalWidth === 0) {
+                    $(this).attr('src', '/images/feed.png');
+                }
+            });
+        });
+    </script>
+}

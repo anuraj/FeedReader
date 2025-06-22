@@ -1,0 +1,37 @@
+﻿@model FeedResponse
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex align-items-start mb-3">
+                <img src="@Model.ImageUrl" alt="Feed Image" class="img-fluid me-3" style="max-width: 200px;" />
+                <div>
+                    <h5>@Model.Title</h5>
+                    <p>@Model.Description</p>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="col-md-12">
+            @if(Model.Items != null && Model.Items.Any())
+            {
+                @foreach (var item in Model.Items)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <p>
+                                @Html.Raw(item.Description) <br />
+                                <a href="@item.Url" target="_blank">Read more</a>
+                                @item.CreatedDate.ToString("dd MMM yyyy HH:mm:ss")
+                            </p>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
