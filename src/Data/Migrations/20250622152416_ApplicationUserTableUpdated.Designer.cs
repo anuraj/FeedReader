@@ -4,6 +4,7 @@ using FeedReader.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FeedReader.Web.Data.Migrations
 {
     [DbContext(typeof(FeedReaderWebDbContext))]
-    partial class FeedReaderWebDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250622152416_ApplicationUserTableUpdated")]
+    partial class ApplicationUserTableUpdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

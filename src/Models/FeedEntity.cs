@@ -17,4 +17,5 @@ public class FeedEntity
     public DateTime? UpdatedDate { get; set; }
     public DateTime? LastUpdatedDate { get; set; }
     public ICollection<FeedItemEntity>? Items { get; set; } = new List<FeedItemEntity>();
+    public ApplicationUserEntity? CreatedBy { get; set; }
 }

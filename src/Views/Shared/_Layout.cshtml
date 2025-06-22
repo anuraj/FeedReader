@@ -24,19 +24,38 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" is-active-route asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" is-active-route asp-controller="Home"
+                                asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" is-active-route asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-area="" is-active-route asp-controller="Home"
+                                asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav flex-grow-1 justify-content-end">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" is-active-route asp-controller="Home" asp-action="Dashboard"><i class="bi bi-columns-gap me-1"></i>Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" is-active-route asp-controller="Home" asp-action="Create"><i class="bi bi-plus-circle me-1"></i>Create</a>
-                        </li>
+                        @if (Context.User.Identity!.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" is-active-route asp-controller="Home"
+                                    asp-action="Dashboard"><i class="bi bi-columns-gap me-1"></i>Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" is-active-route asp-controller="Home" asp-action="Create"><i
+                                        class="bi bi-plus-circle me-1"></i>Create</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="javascript:;">Hello @User.Identity!.Name!</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="SignOut">Signout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="SignUpSignIn">Sign Up / Sign In</a>
+                            </li>
+                        }
                         <li class="nav-item"></li>
                         <div class="dropdown bd-mode-toggle">
                             <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center"
