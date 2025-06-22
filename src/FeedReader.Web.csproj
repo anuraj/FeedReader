@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
     <PackageReference Include="Coravel" Version="6.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

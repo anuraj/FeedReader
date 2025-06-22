@@ -15,4 +15,5 @@ public class FeedReaderWebDbContext : DbContext
 
     public DbSet<FeedEntity> Feeds { get; set; }
     public DbSet<FeedItemEntity> FeedItems { get; set; }
+    public DbSet<ApplicationUserEntity> ApplicationUsers { get; set; }
 }

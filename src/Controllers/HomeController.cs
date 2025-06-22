@@ -9,9 +9,13 @@ using X.PagedList.EF;
 using Coravel.Queuing.Interfaces;
 using FeedReader.Web.Services;
 using SmartBreadcrumbs.Attributes;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+
 namespace FeedReader.Web.Controllers;
 
 [DefaultBreadcrumb]
+[Authorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -25,11 +29,13 @@ public class HomeController : Controller
         _queue = queue;
     }
 
+    [AllowAnonymous]
     public IActionResult Index()
     {
         return View();
     }
 
+    [AllowAnonymous]
     [Breadcrumb(FromAction = "Index", Title = "Privacy")]
     public IActionResult Privacy()
     {
@@ -44,13 +50,28 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateFeedRequest feed, CancellationToken cancellationToken)
     {
+        // Get current user ID
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized();
+        }
+
         if (ModelState.IsValid)
         {
-            // Save the feed to the database
+            // Check if feed exists for this user
             var existingFeed = await _feedReaderWebDbContext.Feeds
-                .FirstOrDefaultAsync(f => f.Url == feed.Url, cancellationToken);
+                .FirstOrDefaultAsync(f => f.Url == feed.Url && f.CreatedBy!.Id == userId, cancellationToken);
             if (existingFeed == null)
             {
+                // Get the user entity
+                var user = await _feedReaderWebDbContext.ApplicationUsers
+                    .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
+
                 var feedData = await FR.ReadAsync(feed.Url, cancellationToken: cancellationToken);
                 if (feedData == null || !feedData.Items.Any())
                 {
@@ -59,7 +80,7 @@ public class HomeController : Controller
                     return View(feed);
                 }
                 // If the feed is valid and does not exist, add it to the database
-                _logger.LogInformation("Creating new feed with URL: {Url}", feed.Url);
+                _logger.LogInformation("Creating new feed with URL: {Url} for user: {UserId}", feed.Url, userId);
                 var FeedEntity = new FeedEntity
                 {
                     Url = feed.Url,
@@ -67,7 +88,8 @@ public class HomeController : Controller
                     Description = feedData.Description,
                     ImageUrl = feedData.ImageUrl,
                     CreatedDate = DateTime.UtcNow,
-                    LastUpdatedDate = null // Initial value, will be updated later
+                    LastUpdatedDate = null, // Initial value, will be updated later
+                    CreatedBy = user // Associate with current user
                 };
 
                 await _feedReaderWebDbContext.Feeds.AddAsync(FeedEntity, cancellationToken);
@@ -80,8 +102,8 @@ public class HomeController : Controller
             }
             else
             {
-                _logger.LogWarning("Feed with URL {Url} already exists.", feed.Url);
-                ModelState.AddModelError(string.Empty, "This feed URL already exists.");
+                _logger.LogWarning("Feed with URL {Url} already exists for user {UserId}.", feed.Url, userId);
+                ModelState.AddModelError(string.Empty, "This feed URL already exists in your feeds.");
                 return View(feed);
             }
         }
@@ -94,17 +116,25 @@ public class HomeController : Controller
     [HttpGet("validate-feed-url")]
     public async Task<IActionResult> ValidateFeedUrl(string url, CancellationToken cancellationToken)
     {
+        // Get current user ID
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            return Json("User not authenticated.");
+        }
+
         //This method is used for remote validation of the feed URL
         if (string.IsNullOrWhiteSpace(url))
         {
             return Json("Please enter a valid URL.");
         }
 
+        // Check if feed exists for this specific user
         var existingFeed = await _feedReaderWebDbContext.Feeds.AsNoTracking()
-            .FirstOrDefaultAsync(f => f.Url == url, cancellationToken);
+            .FirstOrDefaultAsync(f => f.Url == url && f.CreatedBy!.Id == userId, cancellationToken);
         if (existingFeed != null)
         {
-            return Json("This feed URL already exists.");
+            return Json("This feed URL already exists in your feeds.");
         }
 
         try
@@ -127,13 +157,24 @@ public class HomeController : Controller
     [Breadcrumb(FromAction = "Index", Title = "Dashboard")]
     public async Task<IActionResult> Dashboard(int? page, CancellationToken cancellationToken)
     {
+        // Get current user ID
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized();
+        }
+
         if (page != null && page < 1)
         {
             page = 1;
         }
         var pageSize = 10; // Number of feeds per page
-        var totalFeeds = await _feedReaderWebDbContext.Feeds.CountAsync(cancellationToken);
+
+        // Filter feeds by current user
+        var totalFeeds = await _feedReaderWebDbContext.Feeds
+            .CountAsync(f => f.CreatedBy!.Id == userId, cancellationToken);
         var feeds = await _feedReaderWebDbContext.Feeds.AsNoTracking()
+            .Where(f => f.CreatedBy!.Id == userId)
             .OrderByDescending(f => f.CreatedDate)
             .Select(f => new FeedResponse
             {
@@ -153,10 +194,18 @@ public class HomeController : Controller
     [Breadcrumb(FromAction = "Dashboard", Title = "Details")]
     public async Task<IActionResult> Details(int id, CancellationToken cancellationToken)
     {
+        // Get current user ID
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized();
+        }
+
+        // Only allow access to feeds owned by the current user
         var feed = await _feedReaderWebDbContext.Feeds
             .Include(f => f.Items)
             .AsNoTracking()
-            .Where(f => f.Id == id)
+            .Where(f => f.Id == id && f.CreatedBy!.Id == userId)
             .Select(f => new FeedResponse
             {
                 Url = f.Url,
@@ -185,7 +234,7 @@ public class HomeController : Controller
 
         if (feed == null)
         {
-            _logger.LogWarning("Feed with ID {Id} not found.", id);
+            _logger.LogWarning("Feed with ID {Id} not found for user {UserId}.", id, userId);
             return NotFound();
         }
 
